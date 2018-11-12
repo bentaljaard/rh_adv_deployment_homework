@@ -4,3 +4,12 @@
   tasks:
     - name: All GUID env variable
       shell: export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc
+
+- name: Verify correct docker version is installed
+  hosts: nodes
+  tasks:
+    - name: Docker is installed
+      yum:
+        name:
+          - docker-1.13.1
+        state: present
