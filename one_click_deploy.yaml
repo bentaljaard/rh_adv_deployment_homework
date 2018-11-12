@@ -1,6 +1,6 @@
 ---
 - name: Get GUID for environment
-  hosts: localhost
+  hosts: all
   tasks:
      - shell: hostname | cut -d"." -f2
        register: GUID
