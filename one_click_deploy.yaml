@@ -1,4 +1,11 @@
 ---
+#################################################
+# Red Hat Advanced Deployment Homework Playbook
+# Author: B.F. Taljaard
+# Date: 12 Nov 2018
+#################################################
+
+# Get GUID for environment
 - name: Get GUID for environment
   hosts: all
   tasks:
@@ -6,21 +13,16 @@
        register: GUID
        ignore_errors: True
 
-- name: Export GUID on all machines
-  hosts: all
-  tasks: 
-    - name: Export GUID env variable
-      shell: export GUID={{ GUID }}
-
+# Set GUID on all machines
 - name: Add GUID export to bashrc
   hosts: all
   tasks:
     - name: Add GUID export to bashrc
       lineinfile:
         path: $HOME/.bashrc
-        line: export GUID={{ GUID }}
+        line: export GUID={{ GUID['stdout'] }}
 
-
+# Check Docker
 - name: Ensure docker is installed
   hosts: nodes
   tasks:
@@ -30,8 +32,22 @@
           - docker-1.13.1
         state: present
 
+# Check NFS
 - name: Verify NFS Shared Volumes
   hosts: nfs
   tasks:
     - name: Check NFS share exists
       shell: exportfs|grep /srv/nfs
+
+# Install openshift-ansible on bastion
+- name: Install openshift packages
+  hosts: localhost
+  tasks:
+    - name: openshift packages are present
+      yum:
+        name:
+          - openshift-ansible
+          - atomic-openshift-clients
+        state: present
+
+
