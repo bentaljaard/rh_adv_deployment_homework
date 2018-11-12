@@ -50,4 +50,31 @@
           - atomic-openshift-clients
         state: present
 
+# Rename GUID in inventory file
+- name: Generate Inventory Hosts File
+  hosts: localhost
+  tasks:
+    - name: Generate Inventory script
+      replace:
+        path: /root/rh_adv_deployment_homework/ocp_inventory
+        regexp: 'GUID'
+        replace: "{{ GUID['stdout'] }}"
+
+# Replace ansible hosts file
+- name: Copy ansible hosts file into place, backing up the original if it differs from the copied version
+  hosts: localhost
+  copy:
+    src: /root/rh_adv_deployment_homework/ocp_inventory
+    dest: /etc/ansible/hosts
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+
+# Run pre-requisites playbook
+- name: Execute the openshift-ansible prerequisites
+  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+
+
 
