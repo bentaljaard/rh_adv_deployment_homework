@@ -5,7 +5,7 @@
     - name: All GUID env variable
       shell: export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc
 
-- name: Verify correct docker version is installed
+- name: Ensure docker is installed
   hosts: nodes
   tasks:
     - name: Docker is installed
@@ -13,3 +13,9 @@
         name:
           - docker-1.13.1
         state: present
+
+- name: Print docker version
+  hosts: nodes
+  tasks:
+    - name: Print docker version
+      shell: docker version
