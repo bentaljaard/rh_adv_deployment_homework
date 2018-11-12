@@ -1,9 +1,25 @@
 ---
-- name: Prepare GUID environment variable across all hosts
+- name: Get GUID for environment
+  hosts: localhost
+  tasks:
+     - shell: hostname | cut -d"." -f2
+       register: GUID
+       ignore_errors: True
+
+- name: Export GUID on all machines
+  hosts: all
+  tasks: 
+    - name: Export GUID env variable
+      shell: export GUID={{ GUID }}
+
+- name: Add GUID export to bashrc
   hosts: all
   tasks:
-    - name: All GUID env variable
-      shell: export GUID=`hostname | cut -d"." -f2`; echo "export GUID=$GUID" >> $HOME/.bashrc
+    - name: Add GUID export to bashrc
+      lineinfile:
+        path: $HOME/.bashrc
+        line: export GUID={{ GUID }}
+
 
 - name: Ensure docker is installed
   hosts: nodes
