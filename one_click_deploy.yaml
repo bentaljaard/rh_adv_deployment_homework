@@ -18,4 +18,4 @@
   hosts: nfs
   tasks:
     - name: Check NFS share exists
-      shell: exportfs
+      shell: exportfs|grep /srv/nfs
