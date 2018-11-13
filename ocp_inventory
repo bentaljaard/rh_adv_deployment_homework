@@ -20,7 +20,7 @@ openshift_enable_unsupported_configurations=True
 
 # Deploy enterprise in containers
 openshift_deployment_type="openshift-enterprise"
-containerized=true
+#containerized=true
 
 # Default to shared tenant for new projects
 osm_default_node_selector='client=common'
