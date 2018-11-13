@@ -118,7 +118,7 @@
     - name: Create 10g volume definitions
       script: /root/rh_adv_deployment_homework/scripts/create_10g_pvs.sh
     - name: Create persistent volumes on Openshift
-      shell: cat /root/pvs/* | oc create -f -
+      shell: cat /root/pvs/* | oc apply -f -
 
 # Fix persistent volume recycler
 - name: Fix persistent volume recycler
