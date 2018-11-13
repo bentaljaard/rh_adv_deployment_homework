@@ -7,7 +7,7 @@
 
 # Get GUID for environment
 - name: Get GUID for environment
-  hosts: all
+  hosts: all,localhost
   tasks:
      - shell: hostname | cut -d"." -f2
        register: GUID
@@ -15,7 +15,7 @@
 
 # Set GUID on all machines
 - name: Add GUID export to bashrc
-  hosts: all
+  hosts: all,localhost
   tasks:
     - name: Add GUID export to bashrc
       lineinfile:
@@ -50,27 +50,42 @@
           - atomic-openshift-clients
         state: present
 
-# Rename GUID in inventory file
-- name: Generate Inventory Hosts File
+
+# Replace ansible hosts file
+- name: Copy ansible hosts file into place
+  hosts: localhost
+  tasks:
+    - name: Copy ansible hosts file into place, backing up the original if it differs from the copied version
+      copy:
+        src: /root/rh_adv_deployment_homework/ocp_inventory
+        dest: /etc/ansible/hosts
+        owner: root
+        group: root
+        mode: 0644
+        backup: no
+
+# Replace GUID in inventory file
+- name: Replace GUID in Inventory Hosts File
   hosts: localhost
   tasks:
     - name: Generate Inventory script
       replace:
-        path: /root/rh_adv_deployment_homework/ocp_inventory
+        path: /etc/ansible/hosts
         regexp: 'GUID'
         replace: "{{ GUID['stdout'] }}"
 
-# Replace ansible hosts file
-- name: Copy ansible hosts file into place, backing up the original if it differs from the copied version
+# Reload inventory
+- name: Reload inventory
   hosts: localhost
-  copy:
-    src: /root/rh_adv_deployment_homework/ocp_inventory
-    dest: /etc/ansible/hosts
-    owner: root
-    group: root
-    mode: 0644
-    backup: yes
+  tasks:
+    - name: Refresh inventory to ensure new instaces exist in inventory
+      meta: refresh_inventory
 
+#- name: Generate Inventory Hosts File
+#  hosts: localhost
+#  tasks:
+#    - name: Generate Inventory script
+#      script: /root/rh_adv_deployment_homework/scripts/generate_inventory.sh {{ GUID['stdout'] }}
 
 # Run pre-requisites playbook
 - name: Execute the openshift-ansible prerequisites
