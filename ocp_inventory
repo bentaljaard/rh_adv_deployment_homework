@@ -55,10 +55,14 @@ openshift_master_cluster_hostname=loadbalancer1.GUID.internal
 openshift_master_cluster_public_hostname=loadbalancer.GUID.example.opentlc.com 
 openshift_master_default_subdomain=apps.GUID.example.opentlc.com 
 
+openshift_master_overwrite_named_certificates=True
+
+
 ###########################################################################
 ### OpenShift Network Vars
 ###########################################################################
-
+#osm_cluster_network_cidr=10.1.0.0/16
+#openshift_portal_net=172.30.0.0/16
 os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
 
 ###########################################################################
@@ -113,6 +117,8 @@ openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra":"true"}
 ###########################################################################
 ### OpenShift Router and Registry Vars
 ###########################################################################
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_examples_modify_imagestreams=true
 
 openshift_hosted_router_selector='node-role.kubernetes.io/infra=true' 
 openshift_hosted_router_replicas=2 
