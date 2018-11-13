@@ -55,7 +55,7 @@
 - name: Copy ansible hosts file into place
   hosts: localhost
   tasks:
-    - name: Copy ansible hosts file into place, backing up the original if it differs from the copied version
+    - name: Copy ansible hosts file into place
       copy:
         src: /root/rh_adv_deployment_homework/ocp_inventory
         dest: /etc/ansible/hosts
@@ -81,15 +81,29 @@
     - name: Refresh inventory to ensure new instaces exist in inventory
       meta: refresh_inventory
 
-#- name: Generate Inventory Hosts File
-#  hosts: localhost
-#  tasks:
-#    - name: Generate Inventory script
-#      script: /root/rh_adv_deployment_homework/scripts/generate_inventory.sh {{ GUID['stdout'] }}
-
 # Run pre-requisites playbook
-- name: Execute the openshift-ansible prerequisites
+- name: Execute the openshift-ansible prerequisites playbook
   import_playbook: /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
 
+# Run the deployment playbook
+- name: Execute the openshift cluster deployment playbook
+  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+
+# Enable login from bastion host
+- name: Get kube config
+  hosts: masters[0]
+  tasks:
+    - name: copy the .kube directory from master1 to your bastion
+      fetch: 
+        src: /root/.kube/config
+        dest: /root/.kube/config 
+        flat: yes
+
+# Verify login is possible
+- name: Verify login
+  hosts: localhost
+  tasks:
+    - name: make sure you are system:dmin
+      shell: oc whoami | grep system:admin
 
 
