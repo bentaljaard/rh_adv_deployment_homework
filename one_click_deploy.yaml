@@ -10,7 +10,7 @@
   hosts: all,localhost
   tasks:
     - name: Get GUID
-       shell: hostname | cut -d"." -f2
+      shell: hostname | cut -d"." -f2
        register: GUID
        ignore_errors: True
     - name: Add GUID export to bashrc
