@@ -5,22 +5,19 @@
 # Date: 12 Nov 2018
 #################################################
 
-# Get GUID for environment
-- name: Get GUID for environment
+# Set GUID on all machines
+- name: Set GUID on all machines
   hosts: all,localhost
   tasks:
-     - shell: hostname | cut -d"." -f2
+    - name: Get GUID
+       shell: hostname | cut -d"." -f2
        register: GUID
        ignore_errors: True
-
-# Set GUID on all machines
-- name: Add GUID export to bashrc
-  hosts: all,localhost
-  tasks:
     - name: Add GUID export to bashrc
       lineinfile:
         path: $HOME/.bashrc
         line: export GUID={{ GUID['stdout'] }}
+
 
 # Check Docker
 - name: Ensure docker is installed
@@ -52,10 +49,10 @@
 
 
 # Replace ansible hosts file
-- name: Copy ansible hosts file into place
+- name: Generate new ansible inventory file
   hosts: localhost
   tasks:
-    - name: Copy ansible hosts file into place
+    - name: Copy ansible hosts template file into place
       copy:
         src: /root/rh_adv_deployment_homework/ocp_inventory
         dest: /etc/ansible/hosts
@@ -63,32 +60,26 @@
         group: root
         mode: 0644
         backup: no
-
-# Replace GUID in inventory file
-- name: Replace GUID in Inventory Hosts File
-  hosts: localhost
-  tasks:
-    - name: Generate Inventory script
+    - name: Replace GUID in hosts file
       replace:
         path: /etc/ansible/hosts
         regexp: 'GUID'
         replace: "{{ GUID['stdout'] }}"
-
-# Reload inventory
-- name: Reload inventory
-  hosts: localhost
-  tasks:
-    - name: Refresh inventory to ensure new instaces exist in inventory
+    - name: Reload new inventory file
       meta: refresh_inventory
 
+
 # Run pre-requisites playbook
-- name: Execute the openshift-ansible prerequisites playbook
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+#- name: Execute the openshift-ansible prerequisites playbook
+#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
 
 # Run the deployment playbook
-- name: Execute the openshift cluster deployment playbook
-  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
+#- name: Execute the openshift cluster deployment playbook
+#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
 
+
+
+################### REWORK THIS SECTION #######################
 # Enable login from bastion host
 - name: Get kube config
   hosts: masters[0]
@@ -106,4 +97,29 @@
     - name: make sure you are system:dmin
       shell: oc whoami | grep system:admin
 
+###############################################################
 
+# Setup NFS volumes on Support server
+- name: Configure NFS disks
+  hosts: nfs
+  tasks:
+    - name: Creating NFS disks for Persistent Volumes
+      script: /root/rh_adv_deployment_homework/scripts/create_nfs_pvs.sh
+    - name: Restarting NFS Server...
+      shell: systemctl restart nfs-server
+
+
+# Create Persistent Volumes
+- name: Create persistent volumes
+  hosts: localhost
+  tasks:
+    - name: Create 5g volume definitions
+      script: /root/rh_adv_deployment_homework/scripts/create_5g_pvs.sh
+    - name: Create 10g volume definitions
+      script: /root/rh_adv_deployment_homework/scripts/create_10g_pvs.sh
+    - name: Create persistent volumes on Openshift
+      shell: cat /root/pvs/* | oc create -f -
+    - name: Fix persistent volume recycling
+      shell: docker pull registry.access.redhat.com/openshift3/ose-recycler:latest
+    - name: Tag ose-recycler
+      shell: docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.10.34
