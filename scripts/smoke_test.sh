@@ -6,12 +6,13 @@ oc new-project smoke-test
 oc new-app nodejs-mongo-persistent
 
 # Wait for both pods to be running
-while (( $(oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v  build|grep 1/1|wc -l) != 2 )); do 
+while (( $(oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v build|grep 1/1|wc -l) != 2 )); do 
 	echo "Not running yet, going to sleep..."
 	sleep 10
 done 
 
 # Wait short while to ensure route is working
+oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v build|grep 1/1
 sleep 5
 
 # Run integration test
