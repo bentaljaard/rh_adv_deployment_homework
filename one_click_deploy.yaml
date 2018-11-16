@@ -99,10 +99,11 @@
   hosts: localhost
   tasks: 
     - name: Check registry has pv claim
-      shell: oc get pv|grep registry-volume|grep bound
+      shell: oc get pv|grep registry-volume|grep Bound
 
 # Verify Router pod is running on each infranode
 - name: Verify router scheduled on infranodes
+  hosts: localhost
   tasks:
     - name: Check router pod is running on each infra node
       shell: oc get pods -o wide -n default|grep router|grep -e infranode1 -e infranode2
