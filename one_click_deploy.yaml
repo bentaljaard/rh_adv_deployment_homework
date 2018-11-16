@@ -151,13 +151,5 @@
 - name: Deploy smoke test application to verify persistence is working
   hosts: localhost
   tasks:
-    - name: Create new project
-      shell: oc new-project smoke-test
-    - name: Deploy nodejs-mongo-persistent app from template
-      shell: oc new-app nodejs-mongo-persistent
-    - name: Check that the pods are all started
-      shell: while (( $(oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v  build|grep 1/1|wc -l) != 2 )); do sleep 10; done && sleep 5
-    - name: Check that the application works
-      shell: curl http://$(oc -n smoke-test get route nodejs-mongo-persistent --template='{{ .spec.host }}')|grep "Welcome to your Node.js application on OpenShift"
-    - name: Cleanup
-      shell: oc delete project smoke-test
+    - name: Run smoke test script
+      script: /root/rh_adv_deployment_homework/scripts/smoke_test.sh
