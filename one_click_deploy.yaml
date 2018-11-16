@@ -77,9 +77,6 @@
 #- name: Execute the openshift cluster deployment playbook
 #  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
 
-
-
-################### REWORK THIS SECTION #######################
 # Enable login from bastion host
 - name: Get kube config
   hosts: masters[0]
@@ -97,7 +94,19 @@
     - name: make sure you are system:dmin
       shell: oc whoami | grep system:admin
 
-###############################################################
+# Verify Registry has storage
+- name: Verify registry storage
+  hosts: localhost
+  tasks: 
+    - name: Check registry has pv claim
+      shell: oc get pv|grep registry-volume|grep bound
+
+# Verify Router pod is running on each infranode
+- name: Verify router scheduled on infranodes
+  tasks:
+    - name: Check router pod is running on each infra node
+      shell: oc get pods -o wide -n default|grep router|grep -e infranode1 -e infranode2
+
 
 # Setup NFS volumes on Support server
 - name: Configure NFS disks
@@ -107,7 +116,6 @@
       script: /root/rh_adv_deployment_homework/scripts/create_nfs_pvs.sh
     - name: Restarting NFS Server...
       shell: systemctl restart nfs-server
-
 
 # Create Persistent Volumes
 - name: Create persistent volumes
@@ -128,3 +136,27 @@
       shell: docker pull registry.access.redhat.com/openshift3/ose-recycler:latest
     - name: Tag ose-recycler
       shell: docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.10.34
+
+# Verify 25 5Gi pvs created set to recycle and 25 10Gi volumes set for reclaim
+- name: Verify pvs available
+  hosts: localhost
+  tasks:
+    - name: Verify 5Gi volumes
+      shell: (( $(oc get pv|grep Recycle|grep 5Gi|wc -l) == 25 ))
+    - name: Verify 10Gi volumes
+      shell: (( $(oc get pv|grep pv|grep Retain|grep 10Gi|wc -l) == 25 ))
+
+# Run smoke test
+- name: Deploy smoke test application to verify persistence is working
+  hosts: localhost
+  tasks:
+    - name: Create new project
+      shell: oc new-project smoke-test
+    - name: Deploy nodejs-mongo-persistent app from template
+      shell: oc new-app nodejs-mongo-persistent
+    - name: Check that the pods are all started
+      shell: while (( $(oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v  build|grep 1/1|wc -l) != 2 )); do sleep 10; done && sleep 5
+    - name: Check that the application works
+      shell: curl http://$(oc -n smoke-test get route nodejs-mongo-persistent --template='{{ .spec.host }}')|grep "Welcome to your Node.js application on OpenShift"
+    - name: Cleanup
+      shell: oc delete project smoke-test
