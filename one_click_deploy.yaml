@@ -10,8 +10,8 @@
   import_playbook: /root/rh_adv_deployment_homework/playbooks/init.yaml
 
 # Run install playbook
-#- name: Execute the install playbook
-#  import_playbook: /root/rh_adv_deployment_homework/playbooks/install.yaml
+- name: Execute the install playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/install.yaml
 
 # Run verify playbook
 - name: Execute the verify playbook
