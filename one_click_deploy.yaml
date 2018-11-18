@@ -21,6 +21,10 @@
 - name: Execute the nfs playbook
   import_playbook: /root/rh_adv_deployment_homework/playbooks/nfs.yaml
 
+# Run network config playbook
+- name: Execute the networking playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/networking.yaml
+
 # Run smoke test playbook
 - name: Execute the smoke test playbook
   import_playbook: /root/rh_adv_deployment_homework/playbooks/smoke_test.yaml
