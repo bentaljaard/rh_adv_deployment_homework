@@ -21,10 +21,6 @@
 - name: Execute the nfs playbook
   import_playbook: /root/rh_adv_deployment_homework/playbooks/nfs.yaml
 
-# Run smoke test
-- name: Deploy smoke test application to verify persistence is working
-  hosts: localhost
-  tasks:
-    - name: Run smoke test script
-      script: /root/rh_adv_deployment_homework/scripts/smoke_test.sh
-
+# Run smoke test playbook
+- name: Execute the smoke test playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/smoke_test.yaml
