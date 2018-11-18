@@ -109,6 +109,7 @@ openshift_logging_storage_labels={'storage': 'logging'}
 
 # openshift_logging_kibana_hostname=kibana.apps.GUID.example.opentlc.com
 openshift_logging_es_cluster_size=1
+openshift_logging_es_memory_limit: 8Gi
 
 openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"} 
 openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra":"true"} 
@@ -139,11 +140,17 @@ openshift_hosted_registry_storage_volume_size=20Gi
 ###########################################################################
 
 openshift_enable_service_catalog=true 
-ansible_service_broker_install=false 
 template_service_broker_install=true 
+openshift_template_service_broker_namespaces=['openshift']
+
+ansible_service_broker_install=true 
+ansible_service_broker_local_registry_whitelist=['.*-apb$']
+
 template_service_broker_selector={"node-role.kubernetes.io/infra":"true"} 
 openshift_additional_projects={'openshift-template-service-broker': {'default_node_selector': ''}} 
-openshift_template_service_broker_namespaces=['openshift'] 
+
+
+
 
 ##########################################################################
 ### Prometheus Vars
@@ -162,8 +169,8 @@ openshift_prometheus_storage_nfs_directory=/srv/nfs
 openshift_prometheus_storage_nfs_options='*(rw,root_squash)'
 openshift_prometheus_storage_volume_name=prometheus
 openshift_prometheus_storage_volume_size=10Gi
-#openshift_prometheus_storage_labels={'storage': 'prometheus'}
-#openshift_prometheus_storage_type='pvc'
+openshift_prometheus_storage_labels={'storage': 'prometheus'}
+openshift_prometheus_storage_type='pvc'
 
 # For prometheus-alertmanager
 openshift_prometheus_alertmanager_storage_kind=nfs
@@ -172,8 +179,8 @@ openshift_prometheus_alertmanager_storage_nfs_directory=/srv/nfs
 openshift_prometheus_alertmanager_storage_nfs_options='*(rw,root_squash)'
 openshift_prometheus_alertmanager_storage_volume_name=prometheus-alertmanager
 openshift_prometheus_alertmanager_storage_volume_size=10Gi
-#openshift_prometheus_alertmanager_storage_labels={'storage': 'prometheus-alertmanager'}
-#openshift_prometheus_alertmanager_storage_type='pvc'
+openshift_prometheus_alertmanager_storage_labels={'storage': 'prometheus-alertmanager'}
+openshift_prometheus_alertmanager_storage_type='pvc'
 
 # For prometheus-alertbuffer
 openshift_prometheus_alertbuffer_storage_kind=nfs
@@ -182,8 +189,14 @@ openshift_prometheus_alertbuffer_storage_nfs_directory=/srv/nfs
 openshift_prometheus_alertbuffer_storage_nfs_options='*(rw,root_squash)'
 openshift_prometheus_alertbuffer_storage_volume_name=prometheus-alertbuffer
 openshift_prometheus_alertbuffer_storage_volume_size=10Gi
-#openshift_prometheus_alertbuffer_storage_labels={'storage': 'prometheus-alertbuffer'}
-#openshift_prometheus_alertbuffer_storage_type='pvc'
+openshift_prometheus_alertbuffer_storage_labels={'storage': 'prometheus-alertbuffer'}
+openshift_prometheus_alertbuffer_storage_type='pvc'
+
+# Grafana
+openshift_grafana_node_selector={"node-role.kubernetes.io/infra":"true"}
+openshift_grafana_storage_type=pvc
+openshift_grafana_pvc_size=2Gi
+openshift_grafana_node_exporter=true
 
 ##########################################################################
 ### Openshfit project configuration
