@@ -10,4 +10,4 @@
   hosts: localhost
   tasks:
     - name: Execute network-policy migrate script
-      script: /root/rh_adv_deployment_homework/scripts/migrate-network-policy.sh
+      script: /root/rh_adv_deployment_homework/scripts/apply-network-policies-to-existing-namespaces.sh
