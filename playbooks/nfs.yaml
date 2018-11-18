@@ -32,7 +32,7 @@
     - name: Fix persistent volume recycling
       shell: docker pull registry.access.redhat.com/openshift3/ose-recycler:latest
     - name: Tag ose-recycler
-      shell: docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.10.34
+      shell: docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v1.10.0
 
 # Verify 25 5Gi pvs created set to recycle and 25 10Gi volumes set for reclaim
 - name: Verify pvs available
