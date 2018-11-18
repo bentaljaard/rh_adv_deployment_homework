@@ -5,147 +5,21 @@
 # Date: 12 Nov 2018
 #################################################
 
-# Set GUID on all machines
-- name: Set GUID on all machines
-  hosts: all,localhost
-  tasks:
-    - name: Get GUID
-      shell: hostname | cut -d"." -f2
-      register: GUID
-      ignore_errors: True
-    - name: Add GUID export to bashrc
-      lineinfile:
-        path: $HOME/.bashrc
-        line: export GUID={{ GUID['stdout'] }}
+# Run init playbook
+- name: Execute the init playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/init.yaml
 
+# Run install playbook
+#- name: Execute the install playbook
+#  import_playbook: /root/rh_adv_deployment_homework/playbooks/install.yaml
 
-# Check Docker
-- name: Ensure docker is installed
-  hosts: nodes
-  tasks:
-    - name: Docker is installed
-      yum:
-        name:
-          - docker-1.13.1
-        state: present
+# Run verify playbook
+- name: Execute the verify playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/verify.yaml
 
-# Check NFS
-- name: Verify NFS Shared Volumes
-  hosts: nfs
-  tasks:
-    - name: Check NFS share exists
-      shell: exportfs|grep /srv/nfs
-
-# Install openshift-ansible on bastion
-- name: Install openshift packages
-  hosts: localhost
-  tasks:
-    - name: openshift packages are present
-      yum:
-        name:
-          - openshift-ansible
-          - atomic-openshift-clients
-        state: present
-
-
-# Replace ansible hosts file
-- name: Generate new ansible inventory file
-  hosts: localhost
-  tasks:
-    - name: Copy ansible hosts template file into place
-      copy:
-        src: /root/rh_adv_deployment_homework/ocp_inventory
-        dest: /etc/ansible/hosts
-        owner: root
-        group: root
-        mode: 0644
-        backup: no
-    - name: Replace GUID in hosts file
-      replace:
-        path: /etc/ansible/hosts
-        regexp: 'GUID'
-        replace: "{{ GUID['stdout'] }}"
-    - name: Reload new inventory file
-      meta: refresh_inventory
-
-
-# Run pre-requisites playbook
-#- name: Execute the openshift-ansible prerequisites playbook
-#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
-
-# Run the deployment playbook
-#- name: Execute the openshift cluster deployment playbook
-#  import_playbook: /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml
-
-# Enable login from bastion host
-- name: Get kube config
-  hosts: masters[0]
-  tasks:
-    - name: copy the .kube directory from master1 to your bastion
-      fetch: 
-        src: /root/.kube/config
-        dest: /root/.kube/config 
-        flat: yes
-
-# Verify login is possible
-- name: Verify login
-  hosts: localhost
-  tasks:
-    - name: make sure you are system:dmin
-      shell: oc whoami | grep system:admin
-
-# Verify Registry has storage
-- name: Verify registry storage
-  hosts: localhost
-  tasks: 
-    - name: Check registry has pv claim
-      shell: oc get pv|grep registry-volume|grep Bound
-
-# Verify Router pod is running on each infranode
-- name: Verify router scheduled on infranodes
-  hosts: localhost
-  tasks:
-    - name: Check router pod is running on each infra node
-      shell: oc get pods -o wide -n default|grep router|grep -e infranode1 -e infranode2
-
-
-# Setup NFS volumes on Support server
-- name: Configure NFS disks
-  hosts: nfs
-  tasks:
-    - name: Creating NFS disks for Persistent Volumes
-      script: /root/rh_adv_deployment_homework/scripts/create_nfs_pvs.sh
-    - name: Restarting NFS Server...
-      shell: systemctl restart nfs-server
-
-# Create Persistent Volumes
-- name: Create persistent volumes
-  hosts: localhost
-  tasks:
-    - name: Create 5g volume definitions
-      script: /root/rh_adv_deployment_homework/scripts/create_5g_pvs.sh
-    - name: Create 10g volume definitions
-      script: /root/rh_adv_deployment_homework/scripts/create_10g_pvs.sh
-    - name: Create persistent volumes on Openshift
-      shell: cat /root/pvs/* | oc apply -f -
-
-# Fix persistent volume recycler
-- name: Fix persistent volume recycler
-  hosts: nodes
-  tasks:
-    - name: Fix persistent volume recycling
-      shell: docker pull registry.access.redhat.com/openshift3/ose-recycler:latest
-    - name: Tag ose-recycler
-      shell: docker tag registry.access.redhat.com/openshift3/ose-recycler:latest registry.access.redhat.com/openshift3/ose-recycler:v3.10.34
-
-# Verify 25 5Gi pvs created set to recycle and 25 10Gi volumes set for reclaim
-- name: Verify pvs available
-  hosts: localhost
-  tasks:
-    - name: Verify 5Gi volumes
-      shell: (( $(oc get pv|grep Recycle|grep 5Gi|wc -l) == 25 ))
-    - name: Verify 10Gi volumes
-      shell: (( $(oc get pv|grep pv|grep Retain|grep 10Gi|wc -l) == 25 ))
+# Run nfs playbook
+- name: Execute the nfs playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/nfs.yaml
 
 # Run smoke test
 - name: Deploy smoke test application to verify persistence is working
@@ -153,3 +27,4 @@
   tasks:
     - name: Run smoke test script
       script: /root/rh_adv_deployment_homework/scripts/smoke_test.sh
+
