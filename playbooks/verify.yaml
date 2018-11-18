@@ -43,7 +43,7 @@
     - name: Verify 3 master nodes are running
       shell: (( $(oc get nodes |grep master|wc -l) == 3 ))
     - name: Verify 3 etcd pods are running
-      shell: (( $(oc get pods -o wide --all-namespaces|grep etcd|grep -e master[1,2,3]) == 3 ))
+      shell: (( $(oc get pods -o wide --all-namespaces|grep etcd|grep -e master[1,2,3]|wc -l) == 3 ))
     - name: Check that external loadbalancer resolves
       shell: host loadbalancer.{{ GUID['stdout'] }}.example.opentlc.com
     - name: Check that infra apps address resolves
