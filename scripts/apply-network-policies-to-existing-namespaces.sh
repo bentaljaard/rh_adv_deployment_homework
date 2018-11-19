@@ -68,7 +68,7 @@ for netns in $(oc get netnamespaces --output=jsonpath='{range .items[*]}{.netnam
 
     if [[ "${id}" == "0" ]]; then
     	echo "Namespace is global: adding label name=default"
-    	oc label namespace "${name}" "name=default" >/dev/null
+    	oc label namespace "${name}" "name=default" --overwrite >/dev/null
 
     else
     	# All other Namespaces get isolated, but allow traffic from themselves and global
