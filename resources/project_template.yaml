@@ -38,7 +38,7 @@ objects:
   metadata:
     name: "core-resource-limits" 
   spec:
-    limits: # Limit ranges for pods and containers
+    limits: # Limit ranges for pods
       - type: "Pod"
         max:
           cpu: "2" 
@@ -46,12 +46,6 @@ objects:
         min:
           cpu: "50m" 
           memory: "10Mi" 
-        default: # Default Limits
-          cpu: "1" 
-          memory: "500Mi" 
-        defaultRequest: # Default Requests
-          cpu: "200m" 
-          memory: "250Mi"
 
 # Project Quota
 - apiVersion: v1

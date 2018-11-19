@@ -17,7 +17,7 @@
   hosts: localhost
   tasks:
     - name: Load new project template
-      script: oc apply -n default -f /root/rh_adv_deployment_homework/resources/project_template.yaml
+      shell: oc apply -n default -f /root/rh_adv_deployment_homework/resources/project_template.yaml
 
 # Configure masters to use the new project template
 - name: Configure openshift to use the new template

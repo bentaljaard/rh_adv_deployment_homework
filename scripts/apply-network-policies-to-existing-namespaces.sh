@@ -18,7 +18,7 @@ if [[ "${plugin}" != "redhat/openshift-ovs-networkpolicy" ]]; then
 fi 
 
 function default-deny() {
-    oc create --namespace "$1" -f - <<EOF
+    oc apply --namespace "$1" -f - <<EOF
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -29,7 +29,7 @@ EOF
 }
 
 function allow-from-self() {
-    oc create --namespace "$1" -f - <<EOF
+    oc apply --namespace "$1" -f - <<EOF
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -43,7 +43,7 @@ EOF
 }
 
 function allow-from-other() {
-    oc create --namespace "$1" -f - <<EOF
+    oc apply --namespace "$1" -f - <<EOF
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
