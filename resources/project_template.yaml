@@ -4,6 +4,7 @@ metadata:
   creationTimestamp: null
   name: project-request
 objects:
+# Set Default network policies
 - kind: NetworkPolicy
   apiVersion: networking.k8s.io/v1
   metadata:
@@ -30,6 +31,58 @@ objects:
       - namespaceSelector:
           matchLabels:
             name: default
+
+# Limit Ranges
+- apiVersion: "v1"
+  kind: "LimitRange"
+  metadata:
+    name: "core-resource-limits" 
+  spec:
+    limits: # Limit ranges for pods and containers
+      - type: "Pod"
+        max:
+          cpu: "2" 
+          memory: "4Gi" 
+        min:
+          cpu: "50m" 
+          memory: "10Mi" 
+        default: # Default Limits
+          cpu: "1" 
+          memory: "500Mi" 
+        defaultRequest: # Default Requests
+          cpu: "200m" 
+          memory: "250Mi"
+
+# Project Quota
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    annotations:
+      openshift.io/quota-tier: Medium
+    labels:
+      quota-tier: Medium
+    name: quota
+  spec:
+    hard:
+      cpu: "2"
+      memory: 12Gi
+    scopes:
+    - NotTerminating  
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    annotations:
+      openshift.io/quota-tier: Medium
+    labels:
+      quota-tier: Medium
+    name: burst-quota
+  spec:
+    hard:
+      cpu: "4"
+      memory: 16Gi
+
+
+# Standard project template
 - apiVersion: project.openshift.io/v1
   kind: Project
   metadata:

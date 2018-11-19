@@ -1,0 +1,40 @@
+---
+#################################################
+# Red Hat Advanced Deployment Homework Playbook
+# Author: B.F. Taljaard
+# Date: 12 Nov 2018
+#################################################
+
+# Configure networking to be similar to multi-tenancy plugin
+- name: Execute network migrate script
+  hosts: localhost
+  tasks:
+    - name: Execute network-policy migrate script
+      script: /root/rh_adv_deployment_homework/scripts/apply-network-policies-to-existing-namespaces.sh
+
+# Create project template to ensure projects get default network policies and limits
+- name: Load new project template
+  hosts: localhost
+  tasks:
+    - name: Load new project template
+      script: oc apply -n default -f /root/rh_adv_deployment_homework/resources/project_template.yaml
+
+# Configure masters to use the new project template
+- name: Configure openshift to use the new template
+  hosts: masters
+  tasks:
+    - name: Add the new project template
+      replace:
+        path: /etc/origin/master/master-config.yaml
+        regexp: "  projectRequestTemplate: ''"
+        replace:  "  projectRequestTemplate: 'default/project-request'"
+
+# Restart masters
+- name: Restart master services to use the new project template
+  hosts: masters
+  tasks:
+    - name: Restart master services 
+      command: /usr/local/bin/master-restart "{{ item }}"
+      with_items:
+      - "api"
+      - "controllers"
