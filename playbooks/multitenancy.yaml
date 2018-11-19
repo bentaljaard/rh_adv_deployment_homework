@@ -28,13 +28,46 @@
         path: /etc/origin/master/master-config.yaml
         regexp: "  projectRequestTemplate: ''"
         replace:  "  projectRequestTemplate: 'default/project-request'"
-
-# Restart masters
-- name: Restart master services to use the new project template
-  hosts: masters
-  tasks:
     - name: Restart master services 
       command: /usr/local/bin/master-restart "{{ item }}"
       with_items:
       - "api"
       - "controllers"
+
+# Setup client users
+- name: Setup client users
+  hosts: localhost
+  tasks:
+    - name: Create projects
+      command: "oc adm new-project {{ item }}"
+      with_items:
+        - "alpha-project --display-name='Alpha Corp' --node-selector='client=alpha'"
+        - "beta-project --display-name='Beta Corp' --node-selector='client=beta'"
+    - name: Create groups for users
+      command: "{{ item }}"
+      with_items:
+        - "oc adm groups new alpha"
+        - "oc adm groups new beta"
+    - name: Add policies to groups
+      command: "{{ item }}"
+      with_items:
+        - "oc policy add-role-to-group edit beta -n beta-project"
+        - "oc policy add-role-to-group edit alpha -n alpha-project" 
+    - name: Add users to groups (aplha)
+      command: oc adm groups add-users alpha "{{ item }}"
+      with_items:
+        - "amy"
+        - "andrew"
+    - name: Add users to groups (beta)
+      command: oc adm groups add-users beta "{{ item }}"
+      with_items:
+        - "brian"
+        - "betty"
+    - name: Create cluster admin group
+      shell: oc admn groups new ocp-platform
+    - name: Add cluster admin to group
+      shell: oc adm policy add-cluster-role-to-group cluster-admin ocp-platform
+    - name: Add bob as cluster admin
+      shell: oc adm groups add-users ocp-platform bob
+
+
