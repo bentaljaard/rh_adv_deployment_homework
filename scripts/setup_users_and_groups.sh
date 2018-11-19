@@ -13,6 +13,8 @@ if (( $(oc get projects|grep beta-project|wc -l) != 1 )); then
 	oc adm new-project beta-project --display-name='Beta Corp' --node-selector='client=beta'
 fi
 
+
+
 # Create groups
 if (( $(oc get groups alpha 2>&1 |grep NotFound|wc -l) == 1 )); then
 	oc adm groups new alpha
@@ -26,9 +28,23 @@ if (( $(oc get groups beta 2>&1 |grep NotFound|wc -l) == 1 )); then
 	oc adm groups add-users beta brian betty
 fi
 
+# Create common group 
+if (( $(oc get groups common 2>&1 |grep NotFound|wc -l) == 1 )); then
+	oc adm groups new common
+fi
+
 # Create cluster admin
 if (( $(oc get groups ocp-platform 2>&1 |grep NotFound|wc -l) == 1 )); then
 	oc adm groups new ocp-platform
 	oc adm policy add-cluster-role-to-group cluster-admin ocp-platform
 	oc adm groups add-users ocp-platform bob
 fi
+
+# Remove ability to create projects for all users
+oc project default
+oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated
+oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
+
+# Add ability for users in the common group to create their own projects
+oc adm policy add-cluster-role-to-group self-provisioner common
+
