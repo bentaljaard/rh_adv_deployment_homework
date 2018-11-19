@@ -33,6 +33,8 @@
       with_items:
       - "api"
       - "controllers"
+      register: result
+      until: result.rc == 0
 
 # Setup client users
 - name: Setup client users
