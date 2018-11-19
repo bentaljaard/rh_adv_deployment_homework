@@ -42,11 +42,11 @@ fi
 
 # Remove ability to create projects for all users
 if (( $(oc describe clusterrolebinding.rbac -n default self-provisioner |grep system:authenticated|wc -l) != 0 )); then
-	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated -n default
+	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated
 fi
 
 if (( $(oc describe clusterrolebinding.rbac -n default self-provisioner |grep system:authenticated:oauth|wc -l) != 0 )); then
-	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth -n default
+	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
 fi
 
 
