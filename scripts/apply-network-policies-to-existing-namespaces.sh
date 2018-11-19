@@ -54,7 +54,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          pod.network.openshift.io/legacy-netid: "$3"
+          name: "$3"
 EOF
 }
 
@@ -67,8 +67,8 @@ for netns in $(oc get netnamespaces --output=jsonpath='{range .items[*]}{.netnam
     echo "NAMESPACE: ${name}"
 
     if [[ "${id}" == "0" ]]; then
-    	echo "Namespace is global: adding label legacy-netid=${id}"
-    	oc label namespace "${name}" "pod.network.openshift.io/legacy-netid=${id}" >/dev/null
+    	echo "Namespace is global: adding label name=default"
+    	oc label namespace "${name}" "name=default" >/dev/null
 
     else
     	# All other Namespaces get isolated, but allow traffic from themselves and global
@@ -77,6 +77,6 @@ for netns in $(oc get netnamespaces --output=jsonpath='{range .items[*]}{.netnam
 
     	default-deny "${name}"
     	allow-from-self "${name}"
-    	allow-from-other "${name}" allow-from-global-namespaces 0
+    	allow-from-other "${name}" allow-from-global-namespaces default
     fi
 done
