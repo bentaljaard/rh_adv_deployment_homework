@@ -41,9 +41,14 @@ if (( $(oc get groups ocp-platform 2>&1 |grep NotFound|wc -l) == 1 )); then
 fi
 
 # Remove ability to create projects for all users
-oc project default
-oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated
-oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth
+if (( $(oc describe clusterrolebinding.rbac -n default self-provisioner |grep system:authenticated|wc -l) != 0 )); then
+	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated -n default
+fi
+
+if (( $(oc describe clusterrolebinding.rbac -n default self-provisioner |grep system:authenticated:oauth|wc -l) != 0 )); then
+	oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth -n default
+fi
+
 
 # Add ability for users in the common group to create their own projects
 oc adm policy add-cluster-role-to-group self-provisioner common
