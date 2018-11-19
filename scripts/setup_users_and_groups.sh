@@ -28,7 +28,7 @@ fi
 
 # Create cluster admin
 if (( $(oc get groups ocp-platform 2>&1 |grep NotFound|wc -l) == 1 )); then
-	oc admn groups new ocp-platform
+	oc adm groups new ocp-platform
 	oc adm policy add-cluster-role-to-group cluster-admin ocp-platform
 	oc adm groups add-users ocp-platform bob
 fi
