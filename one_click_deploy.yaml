@@ -28,3 +28,8 @@
 # Run smoke test playbook
 - name: Execute the smoke test playbook
   import_playbook: /root/rh_adv_deployment_homework/playbooks/smoke_test.yaml
+
+# Run CICD Playbook
+- name: Execute CICD Playbook
+  import_playbook: /root/rh_adv_deployment_homework/playbooks/cicd.yaml
+

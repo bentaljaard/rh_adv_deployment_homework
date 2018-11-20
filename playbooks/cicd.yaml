@@ -1,0 +1,13 @@
+---
+#################################################
+# Red Hat Advanced Deployment Homework Playbook
+# Author: B.F. Taljaard
+# Date: 12 Nov 2018
+#################################################
+
+# Configure cicd example
+- name: Execute cicd setup script
+  hosts: localhost
+  tasks:
+    - name: Execute cicd setup script
+      script: /root/rh_adv_deployment_homework/scripts/setup_cicd.sh
