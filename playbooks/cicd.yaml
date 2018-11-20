@@ -6,8 +6,11 @@
 #################################################
 
 # Configure cicd example
-- name: Execute cicd setup script
+- name: Setup CICD example
   hosts: localhost
   tasks:
-    - name: Execute cicd setup script
-      script: /root/rh_adv_deployment_homework/scripts/setup_cicd.sh
+    - name: Execute jenkins setup script
+      script: /root/rh_adv_deployment_homework/scripts/setup_jenkins.sh
+    - name: Setup tasks projects
+      script: /root/rh_adv_deployment_homework/scripts/setup_tasks_projects.sh
+

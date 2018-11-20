@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to setup Jenkins and CI pipelines
+# Script to setup Jenkins
 
 # Create CICD project
 if (( $(oc get projects|grep cicd-dev|wc -l) == 0 )); then
