@@ -39,13 +39,28 @@ objects:
     name: "core-resource-limits" 
   spec:
     limits: # Limit ranges for pods
-      - type: "Pod"
+      - type: Pod
         max:
-          cpu: "2" 
-          memory: "4Gi" 
+          cpu: "10"
+          memory: 8Gi
         min:
-          cpu: "50m" 
-          memory: "10Mi" 
+          cpu: 50m
+          memory: 100Mi
+      - type: Container
+        min:
+          cpu: 50m
+          memory: 100Mi
+        max:
+          cpu: "10"
+          memory: 8Gi
+        default:
+          cpu: 50m
+          memory: 100Mi
+        defaultRequest:
+          cpu: 50m
+          memory: 100Mi
+        maxLimitRequestRatio:
+          cpu: "200"
 
 # Project Quota
 - apiVersion: v1
@@ -58,8 +73,8 @@ objects:
     name: quota
   spec:
     hard:
-      cpu: "2"
-      memory: 12Gi
+      cpu: "6"
+      memory: 16Gi
     scopes:
     - NotTerminating  
 - apiVersion: v1
@@ -72,8 +87,8 @@ objects:
     name: burst-quota
   spec:
     hard:
-      cpu: "4"
-      memory: 16Gi
+      cpu: "10"
+      memory: 24Gi
 
 
 # Standard project template
