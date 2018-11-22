@@ -13,7 +13,7 @@ done
 
 # Create build for openshift-tasks application
 if (( $(oc get bc -n tasks-build|wc -l) == 0 )); then
-	oc new-build --name=tasks jboss-eap70-openshift:1.7~https://github.com/OpenShiftDemos/openshift-tasks.git
+	oc -n tasks-build new-build --name=tasks jboss-eap70-openshift:1.7~https://github.com/OpenShiftDemos/openshift-tasks.git
 fi
 
 # Add policies to allow image promotion
@@ -29,7 +29,7 @@ if (( $(oc get dc -n tasks-dev|wc -l) == 0 )); then
 	oc set probe dc/tasks-dev -n tasks-dev --liveness --failure-threshold 3 --initial-delay-seconds 40 -- echo ok
 	oc set probe dc/tasks-dev -n tasks-dev --readiness --failure-threshold 3 --initial-delay-seconds 30 --get-url=http://:8080/ws/healthz/
 	oc expose dc tasks-dev --port 8080 -n tasks-dev
-	oc expose svc/tasks-dev
+	oc expose svc/tasks-dev -n tasks-dev
 fi
 
 if (( $(oc get dc -n tasks-test|wc -l) == 0 )); then
@@ -39,7 +39,7 @@ if (( $(oc get dc -n tasks-test|wc -l) == 0 )); then
 	oc set probe dc/tasks-test -n tasks-test --liveness --failure-threshold 3 --initial-delay-seconds 40 -- echo ok
 	oc set probe dc/tasks-test -n tasks-test --readiness --failure-threshold 3 --initial-delay-seconds 30 --get-url=http://:8080/ws/healthz/
 	oc expose dc tasks-test --port 8080 -n tasks-test
-	oc expose svc/tasks-test
+	oc expose svc/tasks-test -n tasks-test
 fi
 
 if (( $(oc get dc -n tasks-prod|wc -l) == 0 )); then
@@ -49,7 +49,7 @@ if (( $(oc get dc -n tasks-prod|wc -l) == 0 )); then
 	oc set probe dc/tasks-prod -n tasks-prod --liveness --failure-threshold 3 --initial-delay-seconds 40 -- echo ok
 	oc set probe dc/tasks-prod -n tasks-prod --readiness --failure-threshold 3 --initial-delay-seconds 30 --get-url=http://:8080/ws/healthz/
 	oc expose dc tasks-prod --port 8080 -n tasks-prod
-	oc expose svc/tasks-prod
+	oc expose svc/tasks-prod -n tasks-prod
 fi
 
 # Setup pipeline
