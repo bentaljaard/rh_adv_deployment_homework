@@ -13,7 +13,7 @@ done
 
 # Create build for openshift-tasks application
 if (( $(oc get bc -n tasks-build|wc -l) == 0 )); then
-	oc new-build --name=tasks https://github.com/OpenShiftDemos/openshift-tasks.git
+	oc new-build --name=tasks jboss-eap70-openshift:1.7~https://github.com/OpenShiftDemos/openshift-tasks.git
 fi
 
 # Add policies to allow image promotion
