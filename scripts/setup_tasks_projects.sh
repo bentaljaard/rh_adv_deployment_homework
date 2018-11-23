@@ -13,7 +13,7 @@ done
 
 # Create build for openshift-tasks application
 if (( $(oc get bc -n tasks-build|wc -l) == 0 )); then
-	oc -n tasks-build new-build --name=tasks jboss-eap70-openshift:1.7~https://github.com/OpenShiftDemos/openshift-tasks.git
+	oc -n tasks-build new-build --binary=true --name=tasks jboss-eap70-openshift:1.7
 fi
 
 # Add policies to allow image promotion
@@ -37,4 +37,7 @@ done
 
 # Setup pipeline
 
+if (( $(oc get bc -n cicd-dev|grep tasks-pipeline|wc -l) == 0 )); then
+	oc -n cicd-dev apply -f /root/rh_adv_deployment_homework/resources/cicd-pipeline.yaml
+fi
 
