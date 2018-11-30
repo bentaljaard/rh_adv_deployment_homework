@@ -20,8 +20,8 @@ spec:
             image: "openshift3/jenkins-agent-maven-35-rhel7",
             resourceRequestMemory: "1Gi",
             resourceLimitMemory: "2Gi",
-            resourceRequestCPU: "250m",
-            resourceLimitCPU: "500m"
+            resourceRequestCpu: "250m",
+            resourceLimitCpu: "500m"
           )
         ]
         ) {
