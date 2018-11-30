@@ -209,6 +209,16 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 ##########################################################################
 #osm_project_request_message='Please create project using the portal http://portal.GUID.internal/provision or Contact Karla at karla@example.com'
 
+###########################################################################
+### Openshift build defaults
+###########################################################################
+
+openshift_builddefaults_resources_requests_cpu=100m
+openshift_builddefaults_resources_requests_memory=256Mi
+openshift_builddefaults_resources_limits_cpu=1000m
+openshift_builddefaults_resources_limits_memory=512Mi
+
+
 
 ###########################################################################
 ### OpenShift Hosts

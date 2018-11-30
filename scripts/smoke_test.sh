@@ -3,10 +3,10 @@
 # Run smoke test on Openshift to verify persistence is working
 
 oc new-project smoke-test
-oc new-app nodejs-mongo-persistent
+oc new-app nodejs-mongo-persistent -n smoke-test
 
 # Wait for both pods to be running (ignore build and deploy pods)
-while (( $(oc get pod|grep -e mongodb -e nodejs-mongo-persistent |grep -v build|grep -v deploy|grep 1/1|wc -l) != 2 )); do 
+while (( $(oc get pod -n smoke-test|grep -e mongodb -e nodejs-mongo-persistent |grep -v build|grep -v deploy|grep 1/1|wc -l) != 2 )); do 
 	echo "Not running yet, going to sleep..."
 	sleep 10
 done 
