@@ -19,14 +19,16 @@ spec:
             name: "jnlp",
             image: "openshift3/jenkins-agent-maven-35-rhel7",
             resourceRequestMemory: "1Gi",
-            resourceLimitMemory: "2Gi"
+            resourceLimitMemory: "2Gi",
+            resourceRequestCPU: "250m",
+            resourceLimitCPU: "500m"
           )
         ]
         ) {
             node('maven') {
 
                 stage('Checkout Source') {
-                  checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, userRemoteConfigs: [[url: 'https://github.com/OpenShiftDemos/openshift-tasks.git']]])
+                  checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, userRemoteConfigs: [[url: 'https://github.com/redhat-gpte-devopsautomation/openshift-tasks.git']]])
                 }
 
                 def groupId    = getGroupIdFromPom("pom.xml")
@@ -96,7 +98,7 @@ spec:
                 }
 
 
-            }
+            }}
             // Convenience Functions to read variables from the pom.xml
             // Do not change anything below this line.
             // --------------------------------------------------------
@@ -112,7 +114,6 @@ spec:
               def matcher = readFile(pom) =~ '<artifactId>(.+)</artifactId>'
               matcher ? matcher[0][1] : null
             }
-          }
     type: JenkinsPipeline
   triggers:
   - github:
