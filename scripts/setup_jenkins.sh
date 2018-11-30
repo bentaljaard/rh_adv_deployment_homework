@@ -5,6 +5,7 @@
 # Create CICD project
 if (( $(oc get projects|grep cicd-dev|wc -l) == 0 )); then
 	oc new-project cicd-dev
+	oc label namespace cicd-dev "name=jenkins"
 fi
 
 # Check if jenkins is deployed

@@ -8,6 +8,20 @@ do
 		oc new-project tasks-${item}
 		# Assign policies
 		oc policy add-role-to-user edit system:serviceaccount:cicd-dev:jenkins -n tasks-${item}
+		oc apply --namespace tasks-${item} -f - <<EOF
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-from-jenkins
+spec:
+  podSelector:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: "jenkins"
+EOF
+
 	fi
 done
 
