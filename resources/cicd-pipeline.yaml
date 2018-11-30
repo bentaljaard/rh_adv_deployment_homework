@@ -44,7 +44,7 @@ spec:
                 // Using Maven build the war file
                 stage('Build Code Artifacts') {
                   echo "Building version ${version}"
-                  sh "mvn clean install -DskipTests=true"
+                  sh "mvn clean package -DskipTests=true"
                 }
 
                 // Build the OpenShift Image in OpenShift and tag it.
