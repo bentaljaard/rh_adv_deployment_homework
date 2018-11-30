@@ -56,3 +56,5 @@ fi
 if (( $(oc get bc -n cicd-dev|grep tasks-pipeline|wc -l) == 0 )); then
 	oc -n cicd-dev apply -f /root/rh_adv_deployment_homework/resources/cicd-pipeline.yaml
 fi
+
+oc start-build tasks-pipline -n cicd-dev
