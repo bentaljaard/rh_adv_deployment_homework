@@ -58,7 +58,7 @@ spec:
                 // Deploy the built image to the Development Environment.
                 stage('Deploy to Dev') {
                   echo "Promoting container image to Development Project"
-                  openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: 'tasks-test', namespace: 'tasks-build', srcStream: 'tasks', srcTag: devTag, verbose: 'false'
+                  openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: 'tasks-dev', namespace: 'tasks-build', srcStream: 'tasks', srcTag: devTag, verbose: 'false'
                   echo "Deploying container image to Development Project"
                   sh "oc set image dc/tasks tasks=docker-registry.default.svc:5000/tasks-dev/tasks:${devTag} -n tasks-dev"
 
