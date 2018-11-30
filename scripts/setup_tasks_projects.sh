@@ -38,7 +38,7 @@ oc policy add-role-to-group system:image-puller system:serviceaccounts:tasks-dev
 # Setup objects in projects
 for item in "dev" "test" "prod"
 do
-	if (( $(oc get dc -n tasks|wc -l) == 0 )); then
+	if (( $(oc get dc -n tasks-${item}|wc -l) == 0 )); then
 		oc new-app tasks-build/tasks:0.0-0 --name=tasks --allow-missing-imagestream-tags=true --allow-missing-images=true -n tasks-${item}
 		oc set triggers dc/tasks --remove-all -n tasks-${item}
 		oc set resources dc/tasks --limits=cpu=250m,memory=512Mi --requests=cpu=100m,memory=300Mi -n tasks-${item}
@@ -49,9 +49,10 @@ do
 	fi
 done
 
-# Setup pipeline
+if (( $(oc get hpa -n tasks-prod|wc -l) == 0 )); then
+	oc autoscale dc tasks --max 5 --min 1 --cpu-percent 80 -n tasks-prod --name=tasks-hpa
+fi
 
 if (( $(oc get bc -n cicd-dev|grep tasks-pipeline|wc -l) == 0 )); then
 	oc -n cicd-dev apply -f /root/rh_adv_deployment_homework/resources/cicd-pipeline.yaml
 fi
-
