@@ -1,7 +1,9 @@
 # Red Hat Advanced Deployment Homework
 
 Date: 29.10.2018-2.11.2018
+
 Location: Breda, Netherlands
+
 Instructor Name: Jindřich Káňa / +420 739 343 908 (Jindra) / jindrich.kana@elostech.cz
 
 ## Environment Details
