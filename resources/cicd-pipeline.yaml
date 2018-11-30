@@ -11,7 +11,7 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
         podTemplate(
-        label: "skopeo-pod",
+        label: "maven",
         cloud: "openshift",
         inheritFrom: "maven",
         containers: [
