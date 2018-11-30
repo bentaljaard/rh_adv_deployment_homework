@@ -54,8 +54,8 @@ objects:
           cpu: "10"
           memory: 8Gi
         default:
-          cpu: 50m
-          memory: 100Mi
+          cpu: 1000m
+          memory: 500Mi
         defaultRequest:
           cpu: 50m
           memory: 100Mi
