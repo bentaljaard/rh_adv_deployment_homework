@@ -24,14 +24,14 @@ oc policy add-role-to-group system:image-puller system:serviceaccounts:tasks-dev
 # Setup objects in projects
 for item in "dev" "test" "prod"
 do
-	if (( $(oc get dc -n tasks-${item}|wc -l) == 0 )); then
-		oc new-app tasks-build/tasks:0.0-0 --name=tasks-${item} --allow-missing-imagestream-tags=true --allow-missing-images=true -n tasks-${item}
-		oc set triggers dc/tasks-${item} --remove-all -n tasks-${item}
-		oc set resources dc/tasks-${item} --limits=cpu=250m,memory=512Mi --requests=cpu=100m,memory=300Mi -n tasks-${item}
-		oc set probe dc/tasks-${item} -n tasks-${item} --liveness --failure-threshold 3 --initial-delay-seconds 40 -- echo ok
-		oc set probe dc/tasks-${item} -n tasks-${item} --readiness --failure-threshold 3 --initial-delay-seconds 30 --get-url=http://:8080/ws/healthz/
-		oc expose dc tasks-${item} --port 8080 -n tasks-${item}
-		oc expose svc/tasks-${item} -n tasks-${item}
+	if (( $(oc get dc -n tasks|wc -l) == 0 )); then
+		oc new-app tasks-build/tasks:0.0-0 --name=tasks --allow-missing-imagestream-tags=true --allow-missing-images=true -n tasks-${item}
+		oc set triggers dc/tasks --remove-all -n tasks-${item}
+		oc set resources dc/tasks --limits=cpu=250m,memory=512Mi --requests=cpu=100m,memory=300Mi -n tasks-${item}
+		oc set probe dc/tasks -n tasks-${item} --liveness --failure-threshold 3 --initial-delay-seconds 40 -- echo ok
+		oc set probe dc/tasks -n tasks-${item} --readiness --failure-threshold 3 --initial-delay-seconds 30 --get-url=http://:8080/ws/healthz/
+		oc expose dc tasks --port 8080 -n tasks-${item}
+		oc expose svc/tasks -n tasks-${item}
 	fi
 done
 
